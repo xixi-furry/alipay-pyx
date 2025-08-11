@@ -3,9 +3,12 @@ import { ref, onMounted, computed, onUnmounted } from "vue";
 const now = ref(new Date());
 const end = ref(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)); // 3天后
 
-const timerID = setInterval(() => {
+let animationFrameId;
+
+const updateNow = () => {
   now.value = new Date();
-}, 1000);
+  animationFrameId = requestAnimationFrame(updateNow);
+};
 
 const timeDifference = computed(() => Math.max(end.value - now.value, 0));
 
@@ -24,7 +27,7 @@ const seconds = computed(() => {
 });
 
 onUnmounted(() => {
-  clearInterval(timerID);
+  cancelAnimationFrame(animationFrameId);
 });
 
 // 支付宝用户ID和赏金二维码token - 从环境变量中读取
@@ -106,9 +109,8 @@ const isPC = () => {
 const jumpTo_Android = () => {
   if (isWeChat()) {
     // console.log(window.location.href + "/download?redirect_url=" + window.location.href);
-    weui.alert("请在右上角[···]选择在浏览器打开！");
     // 如果是安卓微信内
-    // alert("请在右上角[···]选择在浏览器打开！");
+    weui.alert("请在右上角[···]选择在浏览器打开！");
   } else {
     // 如果不是微信浏览器
     // 跳转到指定页面
@@ -152,6 +154,7 @@ const jumpTo = () => {
 
 // 页面加载完成后执行
 onMounted(() => {
+  updateNow();
   // 如果不是微信内也不是电脑系统，直接跳转
   if (!isWeChat() && !isPC()) {
     location.href = jumpURL.value;
