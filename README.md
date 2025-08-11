@@ -1,6 +1,13 @@
+<!--
+ * @Author: 羚羊公子
+ * @FilePath: \alipay-pyx\README.md
+-->
+
 # 🥂 支付宝碰一下红包页面
 
 支付宝碰一下红包领取脚本源码，让你轻松引流碰一下红包，最近大放水碰一下红包，还是那句话蚊子再小也是肉！
+
+![](https://raw.githubusercontent.com/lygzblog/githubImg/refs/heads/main/alipay-pyx3.webp)
 
 ## 环境变量配置
 
