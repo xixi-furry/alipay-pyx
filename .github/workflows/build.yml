@@ -21,12 +21,12 @@ jobs:
           node-version: 20
           cache: npm
 
-      # 可选：把在 UI 里输入的参数写成 public/config.js（若空则保留原文件）
+      # 构建前写入 public/config.js
       - name: Inject config.js from inputs (optional)
         if: ${{ github.event.inputs.ALIPAY_USER_ID != '' || github.event.inputs.PATH_ID != '' }}
         run: |
           mkdir -p public
-          cat > public/config.js <<'EOF'
+          cat > public/config.js <<EOF
           window.ENV_CONFIG = {
             VITE_ALIPAY_USER_ID: '${{ github.event.inputs.ALIPAY_USER_ID }}',
             VITE_PATH_ID: '${{ github.event.inputs.PATH_ID }}'
@@ -36,15 +36,10 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      # 压缩 dist 到单个 zip 文件
-      - name: Zip dist
-        run: |
-          zip -r build-output.zip dist
-
-      # 上传 zip 文件（不再多套一层）
+      # 上传 dist 目录内容（无 dist 文件夹本身）
       - uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: build-output.zip
+          path: dist/*
           if-no-files-found: error
           retention-days: 7
