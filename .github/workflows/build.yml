@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       ALIPAY_USER_ID:
-        description: 'VITE_APP_ALIPAY_USER_ID'
+        description: 'VITE_ALIPAY_USER_ID'
         required: false
       PATH_ID:
         description: 'VITE_PATH_ID'
@@ -27,8 +27,8 @@ jobs:
         run: |
           mkdir -p public
           cat > public/config.js <<'EOF'
-          window.__ENV__ = {
-            VITE_APP_ALIPAY_USER_ID: '${{ github.event.inputs.ALIPAY_USER_ID }}',
+          window.ENV_CONFIG = {
+            VITE_ALIPAY_USER_ID: '${{ github.event.inputs.ALIPAY_USER_ID }}',
             VITE_PATH_ID: '${{ github.event.inputs.PATH_ID }}'
           };
           EOF
@@ -36,18 +36,15 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist
-          if-no-files-found: error
-          retention-days: 7
-
+      # 压缩 dist 到单个 zip 文件
       - name: Zip dist
         run: |
-          cd dist && zip -r ../build-output.zip .
+          zip -r build-output.zip dist
+
+      # 上传 zip 文件（不再多套一层）
       - uses: actions/upload-artifact@v4
         with:
-          name: build-zip
+          name: build-output
           path: build-output.zip
+          if-no-files-found: error
           retention-days: 7
